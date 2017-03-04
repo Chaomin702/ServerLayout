@@ -27,9 +27,8 @@ int main(int argc, char *argv[])
 
     //release_buff(topo, line_num);
 
-	Graph g;
-	std::vector<std::pair<Traits::vertex_descriptor, int>> consumers;
-	if (importGraphFromFile(topo_file, g, consumers) < 0) return 0;
+	Solution so;
+	so.constructGraph(topo_file);
     print_time("End");
 
 	return 0;

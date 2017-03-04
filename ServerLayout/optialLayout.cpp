@@ -10,24 +10,13 @@
 using std::cout;
 using std::endl;
 using std::string;
+using std::vector;
+using std::pair;
+using std::map;
 using namespace boost;
 
-void AddEdge(Traits::vertex_descriptor v1,
-	Traits::vertex_descriptor v2,
-	boost::property_map < Graph, boost::edge_reverse_t >::type &rev,
-	const int capacity,const int cost,
-	Graph &g)
-{
-	Traits::edge_descriptor e1 = boost::add_edge(v1, v2, g).first;
-	Traits::edge_descriptor e2 = boost::add_edge(v2, v1, g).first;
-	boost::put(boost::edge_capacity, g, e1, capacity);
-	boost::put(boost::edge_capacity, g, e2, 0);
-	boost::put(boost::edge_weight, g, e1, cost);
-	rev[e1] = e2;
-	rev[e2] = e1;
-}
-int importGraphFromFile(const string& filename, Graph&g,
-	std::vector<std::pair<Traits::vertex_descriptor,int>>& consumers) {
+
+int Solution::importGraphFromFile(const string& filename) {
 	std::ifstream infile(filename);
 	if (!infile.is_open()) {
 		cout << "Fail to open file " << filename << endl;
@@ -35,11 +24,11 @@ int importGraphFromFile(const string& filename, Graph&g,
 	}
 	cout << "Open file" << filename << " OK.\n";
 	property_map<Graph, edge_capacity_t>::type
-		capacity = get(edge_capacity, g);
+		capacity = get(edge_capacity, graph_);
 	property_map<Graph, edge_reverse_t>::type
-		rev = get(edge_reverse, g);
+		rev = get(edge_reverse, graph_);
 	property_map<Graph, edge_residual_capacity_t>::type
-		residual_capacity = get(edge_residual_capacity, g);
+		residual_capacity = get(edge_residual_capacity, graph_);
 
 	int numVertex = 0, numEdge = 0, numConsumer = 0;
 	double serverCost = 0;
@@ -61,18 +50,19 @@ int importGraphFromFile(const string& filename, Graph&g,
 		std::getline(infile, buf);
 		std::stringstream ss(buf);
 		ss >> u >> v >> cap >> cost;
-		AddEdge(u, v, rev, cap, cost, g);
+		AddEdge(u, v, rev, cap, cost, graph_);
 	}
 	std::getline(infile, buf);
-	cout << "There are " << num_vertices(g) << " vertexes, " << num_edges(g) << " edges.\n";
+	cout << "There are " << num_vertices(graph_) << " vertexes, " << num_edges(graph_) << " edges.\n";
 	for (int i = 0; i < numConsumer; ++i) {
 		std::getline(infile, buf);
 		std::stringstream ss(buf);
 		ss >> u >> v >> cap;
-		consumers.push_back({ u,cap });
+		BwRequirements[u] = cap;
 	}
 	return 0;
 }
+
 
 //int main(int argc, char* argv[])
 //{
