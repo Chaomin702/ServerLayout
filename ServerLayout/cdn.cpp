@@ -4,6 +4,9 @@
 #include "lib_time.h"
 #include "stdio.h"
 #include "optialLayout.h"
+
+#include "graphviz.h"
+
 int main(int argc, char *argv[])
 {
     print_time("Begin");
@@ -30,6 +33,11 @@ int main(int argc, char *argv[])
 	Graph g;
 	std::vector<std::pair<Traits::vertex_descriptor, int>> consumers;
 	if (importGraphFromFile(topo_file, g, consumers) < 0) return 0;
+
+	std::vector<std::vector<int>> path;
+	path.push_back(std::vector<int>(0));
+	drawGraph(g,path);
+
     print_time("End");
 
 	return 0;
