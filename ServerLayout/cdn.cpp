@@ -7,6 +7,7 @@
 
 #include "graphviz.h"
 
+
 int main(int argc, char *argv[])
 {
     print_time("Begin");
@@ -32,6 +33,7 @@ int main(int argc, char *argv[])
 
 	Solution so;
 	so.constructGraph(topo_file);
+
     print_time("End");
 
 	return 0;

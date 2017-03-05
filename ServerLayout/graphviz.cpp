@@ -1,4 +1,4 @@
-//#include "graphviz.h"
+﻿//#include "graphviz.h"
 #include <iostream>
 #include <fstream>
 #include <sstream>
@@ -15,6 +15,7 @@ void drawGraph(const Graph& g,std::vector<std::vector<int>> path)
 	gvf << "digraph G {\n";
 	//gvf << "size=\"10,10\"\n";
 	gvf << "node [shape=circle,fixedsize=true,width=0.4];\n";
+	gvf << "edge [decorate = true];\n";
 	Graph::vertex_iterator vertexIt, vertexEnd;
 	Graph:: adjacency_iterator neighbourIt, neighbourEnd;
 	boost::tie(vertexIt, vertexEnd) = vertices(g);
@@ -37,11 +38,11 @@ void drawGraph(const Graph& g,std::vector<std::vector<int>> path)
 	}
 
 	std::vector<std::string> color={"red", "blue", "green", "yellow", "salmon2", "deepskyblue", "darkseagreen", "chocolate", "lightskyblue1", "darkorange1", 
-		"darkorange1", "lightsteelblue1", "lemonchiffon", "greenyellow", "aquamarine2" }; //15
+		"firebrick", "lightsteelblue1", "lemonchiffon", "greenyellow", "aquamarine2" }; //15
 #define COLOR_LENGTH 15;
 
-//	int length = path[0][0];
-	int length = 0;
+	int length = path[0][0];
+	//int length = 0;
 	for (int i = 1; i < length; ++i)
 	{
 		int m = path[i].size();
