@@ -32,6 +32,7 @@ int main(int argc, char *argv[])
 
 	Solution so;
 	so.constructGraph(topo_file);
+	so.informationCollected();
     print_time("End");
 
 	return 0;
