@@ -5,9 +5,8 @@
 #include <map>
 #include <boost/graph/adjacency_list.hpp>  
 #include <boost/graph/graph_traits.hpp>
-#include <boost/graph/push_relabel_max_flow.hpp>  
 typedef boost::adjacency_list_traits<boost::vecS, boost::vecS, boost::directedS> Traits;
-typedef boost::adjacency_list<boost::listS, boost::vecS, boost::directedS,
+typedef boost::adjacency_list<boost::vecS, boost::vecS, boost::directedS,
 	boost::no_property,
 	boost::property<boost::edge_capacity_t, long,
 	boost::property<boost::edge_weight_t, int,
@@ -37,8 +36,8 @@ private:
 		Edge e1 = boost::add_edge(v1, v2, g).first;
 		Edge e2 = boost::add_edge(v2, v1, g).first;
 		boost::put(boost::edge_capacity, g, e1, capacity);
-		boost::put(boost::edge_capacity, g, e2, 0);
-		//boost::put(boost::edge_weight, g, e1, cost);
+		boost::put(boost::edge_capacity, g, e2, capacity);
+		boost::put(boost::edge_weight, g, e1, cost);
 		rev[e1] = e2;
 		rev[e2] = e1;
 	}

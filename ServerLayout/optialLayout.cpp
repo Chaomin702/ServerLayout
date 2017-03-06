@@ -23,7 +23,7 @@ int Solution::importGraphFromFile(const string& filename) {
 		cout << "Fail to open file " << filename << endl;
 		return -1;
 	}
-	cout << "Open file" << filename << " OK.\n";
+	cout << "Open file " << filename << " OK.\n";
 	property_map<Graph, edge_capacity_t>::type
 		capacity = get(edge_capacity, graph_);
 	property_map<Graph, edge_reverse_t>::type
@@ -86,17 +86,35 @@ void Solution::informationCollected() {
 		}
 		S.insert({ *vi,flowSum });
 	}
+	//there are any ioslated points ?
+	std::set<Vertex> center;
+	for (auto i : BwRequirements) {
+		Vertex consumer = i.first;
+		Vertex u = target(*out_edges(consumer, graph_).first,graph_);
+		int bw = 0;
+		for (auto ei = out_edges(u, graph_).first; ei != out_edges(u, graph_).second; ++ei) {
+			if (target(*ei,graph_) != consumer) {
+				bw += get(edge_capacity, graph_, *ei);
+			}
+		}
+		if (bw < BwRequirements[consumer]) {
+			cout << "consumer [" << u << "] bandwidth = " << bw << ", requires "<< BwRequirements[consumer]
+				<<" , can't get enough flow from others\n";
+			center.insert(u);
+		}
+	}
 	//select nodes with large bandwidth
 	cout << "\nselect nodes with large bandwidth:\nnode	bandwidth" << endl;
-	vector<Vertex> center;
 	int curFlow = 0;
 	for (auto i : S) {
+		if (center.find(i.first) != center.end()) continue;
 		cout << i.first << "	" << i.second << endl;
 		curFlow += i.second;
-		center.push_back(i.first);
-		if (curFlow > bwSum * 4) break;
+		center.insert(i.first);
+		if (curFlow > bwSum/2) break;
 	}
-	//add super start point and super end point
+	cout << "starting points number: " << center.size() << endl;
+	//add super starting point and super ending point
 	Vertex s = num_vertices(graph_), t = s + 1;
 	property_map<Graph, edge_capacity_t>::type
 		capacity = get(edge_capacity, graph_);
@@ -109,9 +127,10 @@ void Solution::informationCollected() {
 	for (auto u : BwRequirements)
 		AddEdge(u.first, t, rev, INF_CAPACITY, 0, graph_);
 	//maxflow 
-	long flow = push_relabel_max_flow(graph_, s, t);
+	cout << "calculating maxflow...\n" << endl;
+	long flow = edmonds_karp_max_flow(graph_, s, t);
 	//cout flow of comsumer
-	cout << "source	target	flow	requirement" << endl;
+	cout << "s->t	flow	req	diff" << endl;
 	for (auto i : BwRequirements) {
 		Vertex v = i.first;
 		auto ei = out_edges(v, graph_).first;
@@ -119,8 +138,8 @@ void Solution::informationCollected() {
 		Edge e = edge(u, v, graph_).first;
 		//edge must exist
 		assert(edge(u, v, graph_).second);
-		std::cout << "f " << u << "->" << v << "	"
-			<< (capacity[e] - residual_capacity[e]) << "	" << BwRequirements[v] << std::endl;
+		std::cout  << u << "->" << v << "	"
+			<< (capacity[e] - residual_capacity[e]) << "	" << BwRequirements[v] << "	"<< BwRequirements[v]- (capacity[e] - residual_capacity[e]) << std::endl;
 	}
 	cout << "c  The total flow:" << endl;
 	cout << "s " << flow << endl;
